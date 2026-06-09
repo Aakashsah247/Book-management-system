@@ -6,15 +6,124 @@
 
 body {
   background-color: #f8fafc;
-  font-family: Arial, sans-serif;
   color: #1e293b;
+  font-family: Arial, sans-serif;
 }
 
-h1 {
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+main {
+  min-height: 80vh;
+}
+
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 40px;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
   color: #2563eb;
-  margin-bottom: 10px;
 }
 
-div {
-  padding: 30px;
+.nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-links a {
+  font-weight: 500;
+}
+
+.admin-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.hero {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero h1 {
+  font-size: 52px;
+  color: #0f172a;
+  margin-bottom: 18px;
+}
+
+.hero p {
+  font-size: 20px;
+  color: #475569;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-primary,
+.btn-outline {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-outline {
+  border: 1px solid #2563eb;
+  color: #2563eb;
+}
+
+.page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 60px 30px;
+}
+
+.page h2 {
+  font-size: 34px;
+  margin-bottom: 14px;
+}
+
+.page p {
+  color: #475569;
+  font-size: 18px;
+}
+
+.footer {
+  background-color: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 22px;
 }
