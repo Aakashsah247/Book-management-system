@@ -10,6 +10,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import UploadBook from "./pages/UploadBook";
 import ManageBooks from "./pages/ManageBooks";
+import EditBook from "./pages/EditBook";
 
 
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/upload" element={<UploadBook />} />
           <Route path="/admin/books" element={<ManageBooks />} />
+          <Route path="/admin/edit/:id" element={<EditBook />} />
 
       </Routes>
     </main>

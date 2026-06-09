@@ -777,3 +777,90 @@ td {
     padding: 22px;
   }
 }
+.head-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.manage-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.manage-top {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.manage-search,
+.manage-filter {
+  padding: 13px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+.manage-search {
+  flex: 1;
+}
+
+.manage-search:focus,
+.manage-filter:focus {
+  border-color: #2563eb;
+}
+
+.table-box.no-padding {
+  padding: 0;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.view-btn,
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 7px 11px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.view-btn {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.edit-btn {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .manage-top {
+    flex-direction: column;
+  }
+
+  .head-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .head-actions a {
+    text-align: center;
+  }
+}
