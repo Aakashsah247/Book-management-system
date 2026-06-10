@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
 
  function BookCard({ book }) {
+    const coverImage= book.coverImageUrl ||
+    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&auto=format&fit=crop";
+
     return (
         <div className="book-card">
             
             <div className="book-cover">
-                <img src={book.cover} alt={book.title}/>
+                <img src={coverImage} alt={book.title}/>
             </div>
+            
             <div className="book-info">
                 <span className="book-category">{book.category}</span>
                 <h3>{book.title}</h3>

@@ -1,15 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const connectDB = require("./config/db");
+const bookRoutes = require("./routes/bookRoutes");
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/books", bookRoutes);
 
 app.get("/", (req, res) => {
   res.send("Book Management System Backend is running");
@@ -18,8 +19,8 @@ app.get("/", (req, res) => {
 app.get("/api/test", (req, res) => {
   res.json({
     message: "Frontend connected with backend successfully",
-  })
-})
+  });
+});
 
 const PORT = process.env.PORT || 8000;
 

@@ -12,9 +12,6 @@ import UploadBook from "./pages/UploadBook";
 import ManageBooks from "./pages/ManageBooks";
 import EditBook from "./pages/EditBook";
 
-
-
-
 function App() {
   return (
     <>

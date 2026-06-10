@@ -1,22 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { useEffect } from "react";
-import API from "../services/api";
-
-function Home() {
-    useEffect (() =>{
-        const testBackend = async ()=> {
-            try{
-                const res = await API.get("/test");
-                console.log("Backend connected:", res.data);
-            } catch (error) {
-                console.log("Backend connection error:", error.message);
-            }
-        }
-        testBackend();
-
-    }, []);
-    
+function Home() {  
     return (
         <>
         <section className="hero">
