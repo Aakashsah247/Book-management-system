@@ -1,4 +1,6 @@
 const express = require("express");
+const upload = require("../middleware/uploadMiddleware");
+
 
 const {
   createBook,
@@ -9,8 +11,14 @@ const {
 } = require("../controllers/bookController");
 
 const router = express.Router();
-
-router.post("/", createBook);
+router.post (
+   "/",
+   upload.fields ([
+     { name: "coverImage", maxCount: 1 },
+     { name: "pdfFile", maxCount: 1 },
+   ]),
+   createBook
+);
 router.get("/", getBooks);
 router.get("/:id", getBookById);
 router.put("/:id", updateBook);

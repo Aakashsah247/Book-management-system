@@ -5,23 +5,37 @@ const createBook = async (req, res) => {
   try {
     const { title, author, category, description } = req.body;
 
+    const coverImage = req.files?.coverImage?.[0];
+    const pdfFile = req.files?.pdfFile?.[0];
+
+    const coverImageUrl = coverImage
+    ? `${req.protocol}://${req.get("host")}/uploads/covers/${coverImage.filename}`
+    : null;
+
+    const pdfFileUrl = pdfFile
+    ? `${req.protocol}://${req.get("host")}/uploads/pdfs/${pdfFile.filename}`
+    : null;
+
     const book = await prisma.book.create({
       data: {
         title,
         author,
         category,
         description,
+        coverImageUrl,
+        pdfFileUrl,
+
       },
     });
 
     res.status(201).json({
-      message: "Book created successfully",
+      message: "Book uploaded successfully",
       book,
     });
 
   } catch (error) {
     res.status(500).json({
-      message: "Failed to create book",
+      message: "Failed to upload book",
       error: error.message,
     });
   }

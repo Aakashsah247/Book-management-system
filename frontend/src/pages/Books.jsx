@@ -7,32 +7,33 @@ function Books() {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const fetchBooks = async () => {
+    try {
+      const res = await API.get("/books");
+
+      console.log("Books from backend:", res.data);
+
+      setBooks(res.data);
+    } catch (error) {
+      console.log("Failed to fetch books:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchBooks();
   }, []);
 
-  const fetchBooks = async () => {
-    try{
-      const res = await API.get("/books");
-      await API.get("/books");
-    } catch (error) {
-      console.log("Failed to fetch books:", error.message);
-
-    } finally {
-      setLoading(false);
-    }
-
-  }
-  const filteredBooks = books.filter ((book) => {
+  const filteredBooks = books.filter((book) => {
     const searchValue = searchText.toLowerCase();
 
     return (
       book.title.toLowerCase().includes(searchValue) ||
       book.author.toLowerCase().includes(searchValue) ||
       book.category.toLowerCase().includes(searchValue)
-    )
-
-  })
+    );
+  });
 
   return (
     <section className="page">
@@ -42,10 +43,16 @@ function Books() {
       </div>
 
       <div className="search-box">
-        <input type="text" placeholder="Search book by title, author, or category..."
-        value={searchText} onChange={(e) => setSearchText(e.target.value)} />
-        <button>Search</button>
+        <input
+          type="text"
+          placeholder="Search book by title, author, or category..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+
+        <button type="button">Search</button>
       </div>
+
       {loading ? (
         <p>Loading books...</p>
       ) : filteredBooks.length > 0 ? (
