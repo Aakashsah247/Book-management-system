@@ -93,6 +93,29 @@ const updateBook = async (req, res) => {
     const { id } = req.params;
     const { title, author, category, description } = req.body;
 
+    const existingBook = await prisma.book.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!existingBook) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    const coverImage = req.files?.coverImage?.[0];
+    const pdfFile = req.files?.pdfFile?.[0];
+
+    const coverImageUrl = coverImage
+      ? `${req.protocol}://${req.get("host")}/uploads/covers/${coverImage.filename}`
+      : existingBook.coverImageUrl;
+
+    const pdfFileUrl = pdfFile
+      ? `${req.protocol}://${req.get("host")}/uploads/pdfs/${pdfFile.filename}`
+      : existingBook.pdfFileUrl;
+
     const book = await prisma.book.update({
       where: {
         id: Number(id),
@@ -102,6 +125,8 @@ const updateBook = async (req, res) => {
         author,
         category,
         description,
+        coverImageUrl,
+        pdfFileUrl,
       },
     });
 
