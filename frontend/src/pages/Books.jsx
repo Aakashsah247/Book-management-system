@@ -15,7 +15,7 @@ function Books() {
     try{
       const res = await API.get("/books");
       await API.get("/books");
-    } catch {
+    } catch (error) {
       console.log("Failed to fetch books:", error.message);
 
     } finally {

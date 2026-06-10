@@ -1,63 +1,38 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
-const books = [
-    {
-    id: 1,
-    title: "The Digital World",
-    author: "John Smith",
-    category: "Education",
-    description:
-      "A simple book about digital technology, modern systems, internet, software, and how digital tools are changing daily life.",
-    cover:
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&auto=format&fit=crop",
-    pages: 120,
-    language: "English",
-    uploadDate: "2026-01-10",
-  },
-  {
-    id: 2,
-    title: "Life of a Programmer",
-    author: "Sarah Wilson",
-    category: "Programming",
-    description:
-      "A beginner friendly novel about coding, problem solving, software development, and the journey of becoming a programmer.",
-    cover:
-      "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&auto=format&fit=crop",
-    pages: 95,
-    language: "English",
-    uploadDate: "2026-01-12",
-  },
-  {
-    id: 3,
-    title: "Stories of Tomorrow",
-    author: "David Brown",
-    category: "Novel",
-    description:
-      "A collection of short futuristic stories about imagination, technology, life, and creative ideas.",
-    cover:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&auto=format&fit=crop",
-    pages: 150,
-    language: "English",
-    uploadDate: "2026-01-15",
-  },
-  {
-    id: 4,
-    title: "Science for Everyone",
-    author: "Emma Davis",
-    category: "Science",
-    description:
-      "Basic science concepts explained in easy language for students and general readers.",
-    cover:
-      "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&auto=format&fit=crop",
-    pages: 180,
-    language: "English",
-    uploadDate: "2026-01-20",
-  },
-]
+import API from "../services/api";
 
 function BookDetails() {
     const { id } = useParams();
-    const book = books.find((item) => item.id === Number(id));
+    const {book, seBook} = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect (() => {
+      fetchBook();
+    }, [id])
+
+    const fetchBook = async () => {
+      try {
+        const res = await API.get(`/books/${id}`);
+        setBook(res.data);
+
+      } catch (error) {
+        console.log("Failed to fetch book:", error.message);
+        setBook(null);
+
+      } finally{
+        setLoading(false);
+      }
+    }
+
+    if(loading) {
+      return (
+        <section className="page">
+           <h2>Loading book...</h2>
+        </section>
+      )
+    }
+
     if (!book) {
         return (
             <section className="page">
@@ -67,44 +42,55 @@ function BookDetails() {
             </section>
         )
     }
+
+    const coverImage = book.coverImageUrl ||
+     "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&auto=format&fit=crop";
+
     return (
         <section className="page">
             <div className="details-box">
                 <div className="details-cover">
-                    <img src={book.cover} alt={book.title} />
+                    <img src={coverImage} alt={book.title} />
                 </div>
+
                 <div className="details-info">
                     <span className="book-category">{book.category}</span>
                     <h2>{book.title}</h2>
-                    <p className="details-author">By {book.author}</p>
+                    <p className="details-author"> By {book.author}</p>
                      <p className="details-desc">{book.description}</p>
 
                       <div className="book-meta">
                          <div>
-                            <strong>Pages</strong>
-                            <span>{book.pages}</span>
+                            <strong>Downloads</strong>
+                            <span>{book.downloads}</span>
                          </div>
 
                          <div>
-                            <strong>Language</strong>
-                            <span>{book.language}</span>
+                            <strong>Status</strong>
+                            <span>{book.isPublished ? "Published" : "Draft"}</span>
                          </div>
 
                          <div>
                             <strong>Uploaded</strong>
-                            <span>{book.uploadDate}</span>
+                            <span>{new Date(book.createdAt).toLocaleDateString()}</span>
                          </div>
                       </div>
 
                       <div className="details-actions">
                         <Link to={`/read/${book.id}`} className="btn-primary">Read Online</Link>
-                        <button className="btn-outline">Download PDF</button>
-                        <Link to="/books" className="btn-light">Back to Books</Link>
-                      </div>
-                </div>
-            </div>
-        </section>
-    )
+
+                        {book.pdfFileUrl ? (
+              <a href={book.pdfFileUrl} download className="btn-outline"> Download PDF </a>
+            ) : (
+              <button className="btn-outline" disabled> PDF Not Available </button>
+            )}
+
+            <Link to="/books" className="btn-light"> Back to Books</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default BookDetails;
