@@ -13,6 +13,12 @@ app.get("/", (req, res) => {
   res.send("Book Management System Backend is running");
 });
 
+app.get("/api/test", (req, res) => {
+  res.json({
+    message: "Frontend connected with backend successfully",
+  })
+})
+
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
