@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import UploadBook from "./pages/UploadBook";
 import ManageBooks from "./pages/ManageBooks";
 import EditBook from "./pages/EditBook";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -24,11 +25,32 @@ function App() {
           <Route path="/read/:id" element={<ReadBook />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/upload" element={<UploadBook />} />
-          <Route path="/admin/books" element={<ManageBooks />} />
-          <Route path="/admin/edit/:id" element={<EditBook />} />
+          
+          <Route 
+          path="/admin/dashboard"
+          element= {
+             <ProtectedRoute>
+             <AdminDashboard />
+            </ProtectedRoute>
+          }
+          />
+          <Route
+          path="/admin/upload"
+           element={
+            <ProtectedRoute>
+            <UploadBook />
+            </ProtectedRoute>
+          }
+           />
 
+          <Route
+          path="/admin/edit/:id"
+          element={
+            <ProtectedRoute>
+            <EditBook />
+            </ProtectedRoute>
+          }
+            />
       </Routes>
     </main>
     <Footer />

@@ -20,3 +20,12 @@ model Book {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

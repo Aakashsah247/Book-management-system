@@ -39,6 +39,12 @@ function AdminDashboard() {
       </section>
     );
   }
+// logout function
+  const handleLogout = () => {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminInfo");
+  window.location.href = "/admin/login";
+};
 
   return (
     <section className="admin-page">
@@ -48,9 +54,12 @@ function AdminDashboard() {
           <p>Manage books, novels, PDFs, and reading materials.</p>
         </div>
 
-        <Link to="/admin/upload" className="btn-primary">
+        <div className="head-actions">
+          <Link to="/admin/upload" className="btn-primary">
           Upload New Book
         </Link>
+        <button onClick={handleLogout} className="delete-btn"> Logout</button>
+        </div>
       </div>
 
       <div className="dashboard-grid">

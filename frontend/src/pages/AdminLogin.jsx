@@ -1,54 +1,90 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function AdminLogin() {
-    const [formData, setFormData] = useState({
-        email: "",
-        password:""
-    })
-    const handleChange = (e) =>{
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        })
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      const res = await API.post("/admin/login", formData);
+
+      localStorage.setItem("adminToken", res.data.token);
+      localStorage.setItem("adminInfo", JSON.stringify(res.data.admin));
+
+      alert("Login successful.");
+
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.log("Login error:", error);
+      alert("Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
-    const handleSubmit = (e) =>{
-        e.preventDefault();
-        console.log("Admin Login Data:", formData);
-        alert("Login functionality will be connected with backend later.");
-    }
-    return (
-        <section className="login-page">
-            <div className="login-box">
-                <div className="login-head">
-                    <h2>Admin Login</h2>
-                    <p>Login to upload and manage books.</p>
-                </div>
+  };
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="form-group">
-                        <label>Email Address</label>
-                        <input type="email" name="email" placeholder="enter admin email"
-                        value={formData.email} onChange={handleChange} required />
-                    </div>
+  return (
+    <section className="login-page">
+      <div className="login-box">
+        <div className="login-head">
+          <h2>Admin Login</h2>
+          <p>Login to upload and manage books.</p>
+        </div>
 
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" placeholder="enter admin password"
-                        value={formData.password} onChange={handleChange} required />
-                    </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter admin email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-                    <button type="submit" className="login-btn">Login</button>
-                    
-                </form>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter admin password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-                <div className="login-footer">
-                    <Link to="/">Back to Home</Link>
-                </div>
-            </div>
-        </section>
-    )
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <div className="login-footer">
+          <Link to="/">Back to Home</Link>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default AdminLogin;
