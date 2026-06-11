@@ -893,3 +893,17 @@ button:disabled {
   color: #64748b;
   font-size: 17px;
 }
+
+.btn-primary,
+.btn-outline,
+.btn-light {
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  font-size: 15px;
+}
+
+.btn-outline {
+  background-color: transparent;
+}

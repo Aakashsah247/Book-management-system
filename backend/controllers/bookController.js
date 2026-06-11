@@ -164,10 +164,51 @@ const deleteBook = async (req, res) => {
   }
 };
 
+// Increase book download count
+const increaseDownloadCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingBook = await prisma.book.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!existingBook) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    const book = await prisma.book.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        downloads: {
+          increment: 1,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "Download count updated successfully",
+      book,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to update download count",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createBook,
   getBooks,
   getBookById,
   updateBook,
   deleteBook,
+  increaseDownloadCount,
 };

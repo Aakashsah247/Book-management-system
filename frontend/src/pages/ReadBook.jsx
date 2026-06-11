@@ -45,6 +45,20 @@ function ReadBook() {
     );
   }
 
+  const handleDownload = async () => {
+  if (!book.pdfFileUrl) return;
+
+  try {
+    await API.patch(`/books/${book.id}/download`);
+
+    window.open(book.pdfFileUrl, "_blank");
+  } catch (error) {
+    console.log("Download count error:", error);
+
+    window.open(book.pdfFileUrl, "_blank");
+  }
+};
+
   return (
     <section className="reader-page">
       <div className="reader-head">
@@ -57,7 +71,7 @@ function ReadBook() {
           <Link to={`/books/${book.id}`} className="btn-light"> Details </Link>
 
           {book.pdfFileUrl ? (
-            <a href={book.pdfFileUrl} download className="btn-primary"> Download</a>
+            <button onClick={handleDownload} className="btn-primary">Download</button>
           ) : (
             <button className="btn-primary" disabled> No PDF </button>
           )}

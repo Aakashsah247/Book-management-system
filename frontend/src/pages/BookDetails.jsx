@@ -49,6 +49,22 @@ function BookDetails() {
     book.coverImageUrl ||
     "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&auto=format&fit=crop";
 
+    const handleDownload = async() => {
+      if (!book.pdfFileUrl) return;
+      try{
+        await API.patch(`/books/${book.id}/download`);
+        window.open(book.pdfFileUrl, "_blank");
+
+        setBook({
+          ...book,
+          downloads: book.downloads + 1, 
+        });
+      } catch (error) {
+        console.log("Download count error:", error);
+        window.open(book.pdfFileUrl, "_blank");
+      }
+    }
+
   return (
     <section className="page">
       <div className="details-box">
@@ -88,9 +104,7 @@ function BookDetails() {
             </Link>
 
             {book.pdfFileUrl ? (
-              <a href={book.pdfFileUrl} download className="btn-outline">
-                Download PDF
-              </a>
+              <button onClick={handleDownload} className="btn-outline" Download PDF ></button>
             ) : (
               <button className="btn-outline" disabled>
                 PDF Not Available

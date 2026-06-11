@@ -7,6 +7,7 @@ const {
   getBookById,
   updateBook,
   deleteBook,
+  increaseDownloadCount,
 } = require("../controllers/bookController");
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.post(
 );
 
 router.get("/", getBooks);
+router.patch("/:id/download", increaseDownloadCount);
 router.get("/:id", getBookById);
 
 router.put(
