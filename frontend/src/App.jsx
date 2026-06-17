@@ -43,6 +43,15 @@ function App() {
           }
            />
 
+            <Route
+            path="/admin/books"
+            element={
+              <ProtectedRoute>
+              <ManageBooks />
+              </ProtectedRoute>
+            }
+              />
+
           <Route
           path="/admin/edit/:id"
           element={
@@ -51,6 +60,8 @@ function App() {
             </ProtectedRoute>
           }
             />
+
+
       </Routes>
     </main>
     <Footer />

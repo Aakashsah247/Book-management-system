@@ -1,5 +1,6 @@
 const express = require("express");
 const upload = require("../middleware/uploadMiddleware");
+const protectAdmin = require("../middleware/authMiddleware");
 
 const {
   createBook,
@@ -12,8 +13,15 @@ const {
 
 const router = express.Router();
 
+// Public routes
+router.get("/", getBooks);
+router.patch("/:id/download", increaseDownloadCount);
+router.get("/:id", getBookById);
+
+// Protected admin routes
 router.post(
   "/",
+  protectAdmin,
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "pdfFile", maxCount: 1 },
@@ -21,12 +29,9 @@ router.post(
   createBook
 );
 
-router.get("/", getBooks);
-router.patch("/:id/download", increaseDownloadCount);
-router.get("/:id", getBookById);
-
 router.put(
   "/:id",
+  protectAdmin,
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "pdfFile", maxCount: 1 },
@@ -34,6 +39,6 @@ router.put(
   updateBook
 );
 
-router.delete("/:id", deleteBook);
+router.delete("/:id", protectAdmin, deleteBook);
 
 module.exports = router;

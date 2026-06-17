@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Aakashsah247/Book-management-system#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

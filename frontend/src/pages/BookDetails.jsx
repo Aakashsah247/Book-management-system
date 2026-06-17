@@ -104,7 +104,7 @@ function BookDetails() {
             </Link>
 
             {book.pdfFileUrl ? (
-              <button onClick={handleDownload} className="btn-outline" Download PDF ></button>
+              <button onClick={handleDownload} className="btn-outline" >Download PDF </button>
             ) : (
               <button className="btn-outline" disabled>
                 PDF Not Available

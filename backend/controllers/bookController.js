@@ -1,20 +1,63 @@
 const prisma = require("../config/prisma");
+const supabase = require("../config/supabase");
+
+const bucketName = process.env.SUPABASE_BUCKET || "books";
+
+const createFileName = (folder, file) => {
+  const fileExtension = file.originalname.split(".").pop();
+  const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  return `${folder}/${uniqueName}.${fileExtension}`;
+};
+
+const uploadToSupabase = async (folder, file) => {
+  if (!file) return null;
+
+  const filePath = createFileName(folder, file);
+
+  const { error } = await supabase.storage
+    .from(bucketName)
+    .upload(filePath, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+
+  return data.publicUrl;
+};
 
 // Create new book
 const createBook = async (req, res) => {
   try {
     const { title, author, category, description } = req.body;
 
-    const coverImage = req.files?.coverImage?.[0];
-    const pdfFile = req.files?.pdfFile?.[0];
+    if (!title || !author || !category || !description) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
-    const coverImageUrl = coverImage
-    ? `${req.protocol}://${req.get("host")}/uploads/covers/${coverImage.filename}`
-    : null;
+    if (!req.files?.coverImage?.[0]) {
+      return res.status(400).json({
+        message: "Cover image is required",
+      });
+    }
 
-    const pdfFileUrl = pdfFile
-    ? `${req.protocol}://${req.get("host")}/uploads/pdfs/${pdfFile.filename}`
-    : null;
+    if (!req.files?.pdfFile?.[0]) {
+      return res.status(400).json({
+        message: "PDF file is required",
+      });
+    }
+
+    const coverImage = req.files.coverImage[0];
+    const pdfFile = req.files.pdfFile[0];
+
+    const coverImageUrl = await uploadToSupabase("covers", coverImage);
+    const pdfFileUrl = await uploadToSupabase("pdfs", pdfFile);
 
     const book = await prisma.book.create({
       data: {
@@ -24,7 +67,6 @@ const createBook = async (req, res) => {
         description,
         coverImageUrl,
         pdfFileUrl,
-
       },
     });
 
@@ -32,7 +74,6 @@ const createBook = async (req, res) => {
       message: "Book uploaded successfully",
       book,
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Failed to upload book",
@@ -51,7 +92,6 @@ const getBooks = async (req, res) => {
     });
 
     res.status(200).json(books);
-
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch books",
@@ -78,7 +118,6 @@ const getBookById = async (req, res) => {
     }
 
     res.status(200).json(book);
-    
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch book",
@@ -92,6 +131,12 @@ const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, author, category, description } = req.body;
+
+    if (!title || !author || !category || !description) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
     const existingBook = await prisma.book.findUnique({
       where: {
@@ -109,11 +154,11 @@ const updateBook = async (req, res) => {
     const pdfFile = req.files?.pdfFile?.[0];
 
     const coverImageUrl = coverImage
-      ? `${req.protocol}://${req.get("host")}/uploads/covers/${coverImage.filename}`
+      ? await uploadToSupabase("covers", coverImage)
       : existingBook.coverImageUrl;
 
     const pdfFileUrl = pdfFile
-      ? `${req.protocol}://${req.get("host")}/uploads/pdfs/${pdfFile.filename}`
+      ? await uploadToSupabase("pdfs", pdfFile)
       : existingBook.pdfFileUrl;
 
     const book = await prisma.book.update({

@@ -9,15 +9,16 @@ function ManageBooks() {
   const [loading, setLoading] = useState(true);
 
   const fetchBooks = async () => {
-    try {
-      const res = await API.get("/books");
-      setBooks(res.data);
-    } catch (error) {
-      console.log("Failed to fetch books:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await API.get("/books");
+    console.log("Manage books:", res.data);
+    setBooks(res.data);
+  } catch (error) {
+    console.log("Failed to fetch books:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchBooks();

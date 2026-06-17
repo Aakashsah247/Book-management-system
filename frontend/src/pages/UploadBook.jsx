@@ -58,7 +58,9 @@ function UploadBook() {
       e.target.reset();
     } catch (error) {
       console.log("Upload error:", error);
-      alert("Book upload failed.");
+      const message =
+      error.response?.data?.message || "Book upload failed. Please try again.";
+      alert(message);
     } finally {
       setLoading(false);
     }

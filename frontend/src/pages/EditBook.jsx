@@ -86,7 +86,9 @@ function EditBook() {
       navigate("/admin/books");
     } catch (error) {
       console.log("Update error:", error);
-      alert("Book update failed.");
+      const message =
+      error.response?.data?.message || "Book update failed. Please try again.";
+      alert(message);
     } finally {
       setUpdating(false);
     }

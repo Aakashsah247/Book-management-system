@@ -58,7 +58,6 @@ function AdminDashboard() {
           <Link to="/admin/upload" className="btn-primary">
           Upload New Book
         </Link>
-        <button onClick={handleLogout} className="delete-btn"> Logout</button>
         </div>
       </div>
 
