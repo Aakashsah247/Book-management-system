@@ -34,11 +34,17 @@ function AdminLogin() {
 
       navigate("/admin/dashboard");
     } catch (error) {
-      console.log("Login error:", error);
-      alert("Invalid email or password.");
-    } finally {
-      setLoading(false);
-    }
+  console.error("Login error:", error);
+
+  const message =
+    error.response?.data?.message ||
+    error.message ||
+    "Unable to connect to the server.";
+
+  alert(message);
+} finally {
+  setLoading(false);
+}
   };
 
   return (

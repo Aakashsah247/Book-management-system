@@ -9,28 +9,48 @@ const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
-// Middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Requests without an origin include tools and direct API checks.
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("This website origin is not allowed"));
+    },
+  })
+);
+
 app.use(express.json());
 
 // API routes
 app.use("/api/books", bookRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Test routes
+// Basic server test
 app.get("/", (req, res) => {
   res.send("Book Management System Backend is running");
 });
 
-app.get("/api/test", (req, res) => {
-  res.json({
-    message: "Frontend connected with backend successfully",
+// Deployment health check
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Book Management System API is healthy",
+    environment: process.env.NODE_ENV || "development",
   });
 });
 
-// Handle upload and other middleware errors.
+// Central error handler
 app.use((error, req, res, next) => {
-  console.error(error);
+  console.error(error.message);
 
   res.status(error.status || 400).json({
     message: error.message || "Something went wrong",
