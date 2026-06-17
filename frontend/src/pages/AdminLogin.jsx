@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const passwordInputRef = useRef(null);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,34 +24,58 @@ function AdminLogin() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    try {
-      setLoading(true);
+  setLoading(true);
+  setMessage("");
+  setMessageType("");
 
-      const res = await API.post("/admin/login", formData);
+  try {
+    const response = await API.post("/admin/login", {
+      email,
+      password,
+    });
 
-      localStorage.setItem("adminToken", res.data.token);
-      localStorage.setItem("adminInfo", JSON.stringify(res.data.admin));
+    const data = response.data;
 
-      alert("Login successful.");
+    localStorage.setItem("adminToken", data.token);
 
-      navigate("/admin/dashboard");
-    } catch (error) {
-  console.error("Login error:", error);
+    localStorage.setItem(
+      "adminInfo",
+      JSON.stringify(data.admin || data.user || { email })
+    );
 
-  const message =
-    error.response?.data?.message ||
-    error.message ||
-    "Unable to connect to the server.";
+    setMessage("Login successful");
+    setMessageType("success");
 
-  alert(message);
-} finally {
-  setLoading(false);
-}
-  };
+    // Automatically redirect without requiring an OK click.
+    setTimeout(() => {
+      navigate("/admin/dashboard", {
+        replace: true,
+      });
+    }, 800);
+  } catch (error) {
+    console.error("Login error:", error);
 
+    const errorMessage = error.response
+      ? error.response.data?.message || "Invalid email or password"
+      : "Unable to connect to the server";
+
+    setMessage(errorMessage);
+    setMessageType("error");
+
+    // Clear only the incorrect password.
+    setPassword("");
+
+    // Return the cursor to the password field.
+    setTimeout(() => {
+      passwordInputRef.current?.focus();
+    }, 0);
+
+    setLoading(false);
+  }
+};
   return (
     <section className="login-page">
       <div className="login-box">
@@ -60,10 +89,10 @@ function AdminLogin() {
             <label>Email Address</label>
             <input
               type="email"
-              name="email"
-              placeholder="Enter admin email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Admin email"
+              autoComplete="email"
               required
             />
           </div>
@@ -71,18 +100,28 @@ function AdminLogin() {
           <div className="form-group">
             <label>Password</label>
             <input
+              ref={passwordInputRef}
               type="password"
-              name="password"
-              placeholder="Enter admin password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              autoComplete="current-password"
               required
             />
           </div>
 
-          <button type="submit" className="login-btn" disabled={loading}>
+          {message && (
+          <div className={`login-notice ${messageType}`}
+            role="status"
+            aria-live="polite"
+          >
+          {message}
+          </div>
+            )}
+
+            <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
-          </button>
+            </button>
         </form>
 
         <div className="login-footer">
