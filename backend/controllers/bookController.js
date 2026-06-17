@@ -1,6 +1,10 @@
 const prisma = require("../config/prisma");
 const supabase = require("../config/supabase");
 
+const {
+  removeStorageFiles,
+} = require("../utils/storageHelpers");
+
 const bucketName = process.env.SUPABASE_BUCKET || "books";
 
 const createFileName = (folder, file) => {
@@ -161,7 +165,7 @@ const updateBook = async (req, res) => {
       ? await uploadToSupabase("pdfs", pdfFile)
       : existingBook.pdfFileUrl;
 
-    const book = await prisma.book.update({
+    const updatedBook = await prisma.book.update({
       where: {
         id: Number(id),
       },
@@ -175,9 +179,29 @@ const updateBook = async (req, res) => {
       },
     });
 
+    // Remove old files only after the database update succeeds.
+    const oldFiles = [];
+
+    if (coverImage && existingBook.coverImageUrl) {
+      oldFiles.push(existingBook.coverImageUrl);
+    }
+
+    if (pdfFile && existingBook.pdfFileUrl) {
+      oldFiles.push(existingBook.pdfFileUrl);
+    }
+
+    const cleanupResult = await removeStorageFiles(oldFiles);
+
+    if (cleanupResult.error) {
+      console.warn(
+        "Book updated, but an old Storage file could not be removed:",
+        cleanupResult.error
+      );
+    }
+
     res.status(200).json({
       message: "Book updated successfully",
-      book,
+      book: updatedBook,
     });
   } catch (error) {
     res.status(500).json({
@@ -192,14 +216,40 @@ const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const existingBook = await prisma.book.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!existingBook) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    // Delete the database record first.
     await prisma.book.delete({
       where: {
         id: Number(id),
       },
     });
 
+    // Clean up its cover image and PDF from Supabase Storage.
+    const cleanupResult = await removeStorageFiles([
+      existingBook.coverImageUrl,
+      existingBook.pdfFileUrl,
+    ]);
+
+    if (cleanupResult.error) {
+      console.warn(
+        "Book deleted, but Storage cleanup failed:",
+        cleanupResult.error
+      );
+    }
+
     res.status(200).json({
-      message: "Book deleted successfully",
+      message: "Book and its files deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
@@ -208,7 +258,6 @@ const deleteBook = async (req, res) => {
     });
   }
 };
-
 // Increase book download count
 const increaseDownloadCount = async (req, res) => {
   try {
